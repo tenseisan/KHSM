@@ -55,16 +55,28 @@ RSpec.describe Game, type: :model do
       expect(game_w_questions.finished?).to be_truthy
       expect(user.balance).to eq prize
     end
+  end
 
+
+  # Задание 61-6
+
+  describe '#current_game_question' do
     it 'should return current unanswered question' do
       expect(game_w_questions.current_game_question).to eq game_w_questions.game_questions[0]
-    end
 
-    it 'should return previous level number of game' do
-      expect(game_w_questions.previous_level).to eq game_w_questions.current_level - 1
+      game_w_questions = FactoryBot.create(:game_with_questions, current_level: 5)
+      expect(game_w_questions.current_game_question).to eq game_w_questions.game_questions[5]
     end
-
   end
+
+  describe '#previous_level' do
+  it 'should return previous level number of game' do
+    expect(game_w_questions.previous_level).to eq -1
+
+    game_w_questions = FactoryBot.create(:game_with_questions, current_level: 5)
+    expect(game_w_questions.previous_level).to eq 4
+  end
+end
 
   context '.status' do
     before(:each) do
