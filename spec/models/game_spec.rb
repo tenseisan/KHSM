@@ -82,14 +82,12 @@ RSpec.describe Game, type: :model do
 
   describe '#answer_current_question!' do
     it 'return true when correct answer' do
-      game_w_questions = FactoryBot.create(:game_with_questions)
       right_answer = game_w_questions.answer_current_question!('d')
 
       expect(right_answer).to eq true
     end
 
     it 'return false when incorrect answer' do
-      game_w_questions = FactoryBot.create(:game_with_questions)
       right_answer = game_w_questions.answer_current_question!('c')
 
       expect(right_answer).to eq false
@@ -103,7 +101,6 @@ RSpec.describe Game, type: :model do
     end
 
     it 'timeout' do
-      game_w_questions = FactoryBot.create(:game_with_questions)
       game_w_questions.answer_current_question!('d')
 
       expect(game_w_questions.is_failed).to eq false
