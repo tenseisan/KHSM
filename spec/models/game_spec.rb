@@ -61,20 +61,27 @@ RSpec.describe Game, type: :model do
   # Задание 61-6
 
   describe '#current_game_question' do
-    it 'should return current unanswered question' do
+    it 'should return first unanswered question' do
       expect(game_w_questions.current_game_question).to eq game_w_questions.game_questions[0]
+    end
 
+    it 'should return current unanswere question' do
       game_w_questions = FactoryBot.create(:game_with_questions, current_level: 5)
+
       expect(game_w_questions.current_game_question).to eq game_w_questions.game_questions[5]
     end
   end
 
   describe '#previous_level' do
-    it 'should return previous level number of game' do
-     expect(game_w_questions.previous_level).to eq -1
 
-     game_w_questions = FactoryBot.create(:game_with_questions, current_level: 5)
-     expect(game_w_questions.previous_level).to eq 4
+    it 'should return previous level number' do
+     expect(game_w_questions.previous_level).to eq -1
+    end
+
+    it 'should return previous level 4' do
+      game_w_questions = FactoryBot.create(:game_with_questions, current_level: 5)
+
+      expect(game_w_questions.previous_level).to eq 4
     end
   end
 
