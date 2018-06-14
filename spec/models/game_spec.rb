@@ -70,13 +70,45 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#previous_level' do
-  it 'should return previous level number of game' do
-    expect(game_w_questions.previous_level).to eq -1
+    it 'should return previous level number of game' do
+     expect(game_w_questions.previous_level).to eq -1
 
-    game_w_questions = FactoryBot.create(:game_with_questions, current_level: 5)
-    expect(game_w_questions.previous_level).to eq 4
+     game_w_questions = FactoryBot.create(:game_with_questions, current_level: 5)
+     expect(game_w_questions.previous_level).to eq 4
+    end
   end
-end
+
+  # Задание 61-7
+
+  describe '#answer_current_question!' do
+    it 'return true when correct answer' do
+      game_w_questions = FactoryBot.create(:game_with_questions)
+      right_answer = game_w_questions.answer_current_question!('d')
+
+      expect(right_answer).to eq true
+    end
+
+    it 'return false when incorrect answer' do
+      game_w_questions = FactoryBot.create(:game_with_questions)
+      right_answer = game_w_questions.answer_current_question!('c')
+
+      expect(right_answer).to eq false
+    end
+
+    it 'last question' do
+      game_w_questions = FactoryBot.create(:game_with_questions, current_level: 14)
+      game_w_questions.answer_current_question!('d')
+
+      expect(game_w_questions.prize).to eq 1000000
+    end
+
+    it 'timeout' do
+      game_w_questions = FactoryBot.create(:game_with_questions)
+      game_w_questions.answer_current_question!('d')
+
+      expect(game_w_questions.is_failed).to eq false
+    end
+  end
 
   context '.status' do
     before(:each) do
