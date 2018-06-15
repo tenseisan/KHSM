@@ -112,7 +112,7 @@ RSpec.describe Game, type: :model do
 
     it 'should timeout' do
       # создаем игру с установленным временем
-      game_w_questions = FactoryBot.create(:game_with_questions, created_at: Time.now,
+      game_w_questions = FactoryBot.create(:game_with_questions,
                                            finished_at: Time.now + 36.minutes, is_failed: true)
       # правильный ответ после timeout
       game_w_questions.answer_current_question!('d')
