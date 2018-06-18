@@ -2,7 +2,6 @@ require 'rails_helper'
 require 'support/my_spec_helper' # наш собственный класс с вспомогательными методами
 
 RSpec.describe GamesController, type: :controller do
-
   # обычный пользователь
   let(:user) { FactoryBot.create(:user) }
   # админ
@@ -11,7 +10,6 @@ RSpec.describe GamesController, type: :controller do
   let(:game_w_questions) { FactoryBot.create(:game_with_questions, user: user) }
 
   context 'usual user' do
-
     before(:each) { sign_in user }
 
     # проверка, что пользовтеля посылают из чужой игры
@@ -29,9 +27,7 @@ RSpec.describe GamesController, type: :controller do
 
     # юзер берет деньги
     it 'takes money' do
-      # вручную поднимем уровень вопроса до выигрыша 200
       game_w_questions.update_attribute(:current_level, 2)
-
 
       put :take_money, id: game_w_questions.id
       game = assigns(:game)
@@ -40,7 +36,6 @@ RSpec.describe GamesController, type: :controller do
       expect(game.finished?).to be_truthy
       expect(game.prize).to eq(200)
 
-      # пользователь изменился в базе, надо в коде перезагрузить!
       user.reload
       expect(user.balance).to eq(200)
 
@@ -49,10 +44,7 @@ RSpec.describe GamesController, type: :controller do
     end
 
     it 'try to create second game' do
-      # убедились что есть игра в работе
       expect(game_w_questions.finished?).to be_falsey
-
-      # отправляем запрос на создание, убеждаемся что новых Game не создалось
       expect { post :create }.to change(Game, :count).by(0)
 
       game = assigns(:game) # вытаскиваем из контроллера поле @game
@@ -65,10 +57,11 @@ RSpec.describe GamesController, type: :controller do
 
     # Задание 62-7
     it 'user make wrong answer' do
-      # Зададим уровень побольше
       game_w_questions.update_attribute(:current_level, 5)
+
       # Вызываем метод ответа и передаем ему неправильную вариант
       put :answer, id: game_w_questions.id, params: { answer: 'a' }
+
       # Игра кончилась, юзера редиректнуло с игры и сообщило об окончании
       expect(response).to redirect_to(user_path(user))
       expect(flash[:alert]).to be
@@ -77,10 +70,11 @@ RSpec.describe GamesController, type: :controller do
   end
 
   context 'anonym user' do
+
     it 'kick from #show' do
       # вызываем экшен
       get :show, id: game_w_questions.id
-      # проверяем ответ
+
       expect(response.status).not_to eq(200) # статус не 200 ОК
       expect(response).to redirect_to(new_user_session_path) # devise должен отправить на логин
       expect(flash[:alert]).to be # во flash должен быть прописана ошибка
@@ -97,9 +91,9 @@ RSpec.describe GamesController, type: :controller do
     it 'kick from #answer' do
       put :answer, id: game_w_questions.id, params: { letter: 'd' }
 
-      expect(response.status).not_to eq(200)
+      expect(response.status).to eq(302)
       expect(response).to redirect_to(new_user_session_path)
-      expect(flash[:alert]).to be
+      expect(flash[:alert]).to eq(I18n.t('devise.failure.unauthenticated'))
     end
 
     it 'kick from #take_money' do
@@ -110,5 +104,4 @@ RSpec.describe GamesController, type: :controller do
       expect(flash[:alert]).to be
     end
   end
-
 end
