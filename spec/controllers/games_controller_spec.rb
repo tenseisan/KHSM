@@ -73,6 +73,7 @@ RSpec.describe GamesController, type: :controller do
       # Проверяем статус игры, должна была закончится
       expect(game.status).to eq(:fail)
       expect(flash[:alert]).to be
+      expect(game.finished?).to be true
       # Проверяем приз за игру
       expect(game.prize).to eq 1000
       # перезагрузим юзера и посмотрим его баланс и редирект
