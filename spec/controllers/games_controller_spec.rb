@@ -68,18 +68,9 @@ RSpec.describe GamesController, type: :controller do
       game_w_questions.update_attribute(:current_level, 5)
       # Вызываем метод ответа и передаем ему неправильную вариант
       put :answer, id: game_w_questions.id, params: {answer: 'a'}
-      # Вытаскиваем текущую игру
-      game = assigns(:game)
-      # Проверяем статус игры, должна была закончится
-      expect(game.status).to eq(:fail)
-      expect(flash[:alert]).to be
-      expect(game.finished?).to be true
-      # Проверяем приз за игру
-      expect(game.prize).to eq 1000
-      # перезагрузим юзера и посмотрим его баланс и редирект
-      user.reload
-      expect(user.balance).to eq 1000
+      # Игра кончилась, юзера редиректнуло с игры и сообщило об окончании
       expect(response).to redirect_to(user_path(user))
+      expect(flash[:alert]).to be
     end
   end
 
