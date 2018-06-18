@@ -100,6 +100,7 @@ RSpec.describe Game, type: :model do
 
       expect(right_answer).to eq false
       expect(game_w_questions.status).to eq(:fail)
+      expect(game_w_questions.finished?).to be true
     end
 
     it 'last question' do
@@ -108,6 +109,7 @@ RSpec.describe Game, type: :model do
 
       expect(game_w_questions.prize).to eq 1000000
       expect(game_w_questions.status).to eq(:won)
+      expect(game_w_questions.finished?).to be true
     end
 
     it 'should timeout' do
@@ -118,6 +120,7 @@ RSpec.describe Game, type: :model do
       game_w_questions.answer_current_question!('d')
       # проверяем статус игры после правильного ответа и timeout'a
       expect(game_w_questions.status).to eq(:timeout)
+      expect(game_w_questions.finished?).to be true
     end
   end
 
