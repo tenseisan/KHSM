@@ -12,9 +12,9 @@ RSpec.describe GamesController, type: :controller do
 
   context 'usual user' do
 
-  before(:each) { sign_in user }
+    before(:each) { sign_in user }
 
-  # проверка, что пользовтеля посылают из чужой игры
+    # проверка, что пользовтеля посылают из чужой игры
     it '#show alien game' do
       # создаем новую игру, юзер не прописан, будет создан фабрикой новый
       alien_game = FactoryBot.create(:game_with_questions)
@@ -22,7 +22,7 @@ RSpec.describe GamesController, type: :controller do
       # пробуем зайти на эту игру текущий залогиненным user
       get :show, id: alien_game.id
 
-      expect(response.status).not_to eq(200) # статус не 200 ОК
+      expect(response.status).to eq(302) # статус 302
       expect(response).to redirect_to(root_path)
       expect(flash[:alert]).to be # во flash должен быть прописана ошибка
     end
@@ -62,15 +62,17 @@ RSpec.describe GamesController, type: :controller do
       expect(response).to redirect_to(game_path(game_w_questions))
       expect(flash[:alert]).to be
     end
+
     # Задание 62-7
     it 'user make wrong answer' do
       # Зададим уровень побольше
       game_w_questions.update_attribute(:current_level, 5)
       # Вызываем метод ответа и передаем ему неправильную вариант
-      put :answer, id: game_w_questions.id, params: {answer: 'a'}
+      put :answer, id: game_w_questions.id, params: { answer: 'a' }
       # Игра кончилась, юзера редиректнуло с игры и сообщило об окончании
       expect(response).to redirect_to(user_path(user))
       expect(flash[:alert]).to be
+      expect(response.status).to eq(302)
     end
   end
 
@@ -93,7 +95,7 @@ RSpec.describe GamesController, type: :controller do
     end
 
     it 'kick from #answer' do
-      put :answer, id: game_w_questions.id, params: {letter: 'd'}
+      put :answer, id: game_w_questions.id, params: { letter: 'd' }
 
       expect(response.status).not_to eq(200)
       expect(response).to redirect_to(new_user_session_path)
