@@ -48,20 +48,38 @@ RSpec.describe GamesController, type: :controller do
       expect(flash[:warning]).to be
     end
 
-  it 'try to create second game' do
-    # убедились что есть игра в работе
-    expect(game_w_questions.finished?).to be_falsey
+    it 'try to create second game' do
+      # убедились что есть игра в работе
+      expect(game_w_questions.finished?).to be_falsey
 
-    # отправляем запрос на создание, убеждаемся что новых Game не создалось
-    expect { post :create }.to change(Game, :count).by(0)
+      # отправляем запрос на создание, убеждаемся что новых Game не создалось
+      expect { post :create }.to change(Game, :count).by(0)
 
-    game = assigns(:game) # вытаскиваем из контроллера поле @game
-    expect(game).to be_nil
+      game = assigns(:game) # вытаскиваем из контроллера поле @game
+      expect(game).to be_nil
 
-    # и редирект на страницу старой игры
-    expect(response).to redirect_to(game_path(game_w_questions))
-    expect(flash[:alert]).to be
-  end
+      # и редирект на страницу старой игры
+      expect(response).to redirect_to(game_path(game_w_questions))
+      expect(flash[:alert]).to be
+    end
+    # Задание 62-7
+    it 'user make wrong answer' do
+      # Зададим уровень побольше
+      game_w_questions.update_attribute(:current_level, 5)
+      # Вызываем метод ответа и передаем ему неправильную вариант
+      put :answer, id: game_w_questions.id, params: {answer: 'a'}
+      # Вытаскиваем текущую игру
+      game = assigns(:game)
+      # Проверяем статус игры, должна была закончится
+      expect(game.status).to eq(:fail)
+      expect(flash[:alert]).to be
+      # Проверяем приз за игру
+      expect(game.prize).to eq 1000
+      # перезагрузим юзера и посмотрим его баланс и редирект
+      user.reload
+      expect(user.balance).to eq 1000
+      expect(response).to redirect_to(user_path(user))
+    end
   end
 
   context 'anonym user' do
