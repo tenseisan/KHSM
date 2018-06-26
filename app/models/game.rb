@@ -143,6 +143,30 @@ class Game < ActiveRecord::Base
     finish_game!(previous_level > -1 ? PRIZES[previous_level] : 0, false)
   end
 
+  def use_help(help_type)
+    help_types = %i(fifty_fifty audience_help friend_call)
+    help_type = help_type.to_sym
+    raise ArgumentError.new('wrong help_type') unless help_types.include?(help_type)
+
+    unless self["#{help_type}_used"]
+      self["#{help_type}_used"] = true
+      current_game_question.apply_help!(help_type)
+      save
+    end
+  end
+
+
+  def apply_help!(help_type)
+    case help_type.to_s
+    when :fifty_fifty
+      add_fifty_fifty
+    when :audience_help
+      add_audience_help
+    when :friend_call
+      add_friend_call
+    end
+  end
+
   # Результат игры status, возвращает, одно из:
   #
   # :fail — игра проиграна из-за неверного вопроса
