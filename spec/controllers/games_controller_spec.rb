@@ -91,8 +91,8 @@ RSpec.describe GamesController, type: :controller do
       game = assigns(:game)
 
       expect(game.fifty_fifty_used).to be_truthy
-      expect(game.current_game_question.help_hash[:fifty_fifty]).to eq(['d','b'])
       expect(response).to redirect_to(game_path(game))
+      expect(flash[:info]).to eq(I18n.t('controllers.games.help_used'))
     end
   end
 
