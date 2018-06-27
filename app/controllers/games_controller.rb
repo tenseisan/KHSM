@@ -31,6 +31,7 @@ class GamesController < ApplicationController
         'controllers.games.game_created',
         created_at: @game.created_at
       )
+      byebug
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved => ex
       # Если ошибка создания игры
       Rails.logger.error("Error creating game for user #{current_user.id}, " \
